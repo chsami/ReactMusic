@@ -3,7 +3,7 @@ import './App.scss';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import store from './store';
-import { fetchNextSong, fetchPreviousSong } from './actions/songAction';
+import { fetchNextSong, fetchPreviousSong, loadTotalSongs } from './actions/songAction';
 
 
 export class App extends Component {
@@ -13,38 +13,35 @@ export class App extends Component {
         songs: [],
         lastPage: false,
         playButton: true,
-        currentTrack: 0
-    }
-
-    updateCurrentTrack() {
-        this.setState({ currentTrack: store.getState().playerReducer.songCounter} );
+        currentSong: ""
     }
 
 
     constructor() {
-        window.onscroll = () => {
-            // Bails early if:
-            // * there's an error
-            // * it's already loading
-            // * there's nothing left to load
-            if (this.state.lastPage) return;
-            // Checks that the page has scrolled to the bottom
-            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
-                // you're at the bottom of the page
-                console.log("bottom page");
-                this.loadSongs();
-            }
-        };
         super();
     }
 
     componentDidMount() {
-        this.updateCurrentTrack();
-        this.loadSongs()
+        this.loadSongs().then(() => {
+            const audio = document.querySelector('audio');
+            this.setState({ currentSong: this.generateGoogleDriveUrl(store.getState().playerReducer.songCounter) });
+            audio.load();
+            const background = document.querySelector("#cover");
+            setInterval(() => {
+                if (this.state.playButton === false) {
+                    const rnd = Math.random() * Math.floor(1000)
+                    background.style.boxShadow = `0 30px ${rnd}px #656565`;
+                }
+            }, 100);
+        });
+    }
+
+    generateGoogleDriveUrl(id) {
+        return `https://drive.google.com/uc?export=view&id=${this.state.songs[id].id}`;
     }
 
     loadSongs() {
-        axios.get('https://localhost/googledriveapi/api/files').then((result) => {
+        return axios.get('https://localhost/googledriveapi/api/files').then((result) => {
             let songs = 0;
             if (result.data.length < 20) {
                 this.setState({ lastPage: true });
@@ -55,29 +52,16 @@ export class App extends Component {
                 songs = result.data;
             }
             this.setState({ songs: songs });
+            store.dispatch(loadTotalSongs(songs.length));
         });
-    }
-
-
-
-    listItem = (props) => {
-        const textCenter = {
-            textAlign: 'center'
-        };
-        return (
-            <li className="song" >
-                <audio controls>
-                    <source src={`https://drive.google.com/uc?export=view&id=${props.song.id}`}></source>
-                </audio>
-                <span style={textCenter}>{props.song.name}</span>
-            </li>);
     }
 
 
     play = param => () => {
         const audio = document.querySelector('audio');
+
         audio.addEventListener('timeupdate', this.updateCurrTime);
-        //const source = document.querySelector('source');
+
         if (audio) {
             if (!audio.paused) {
                 audio.pause();
@@ -89,14 +73,23 @@ export class App extends Component {
         }
     }
 
+    loadNewTrack() {
+        const audio = document.querySelector('audio');
+        audio.pause();
+        this.setState({ currentSong: this.generateGoogleDriveUrl(store.getState().playerReducer.songCounter) });
+        audio.load();
+        audio.play().then(() => { }, (err) => { });
+        this.setState({ playButton: false });
+    }
+
     nextSong() {
         store.dispatch(fetchNextSong());
-        this.updateCurrentTrack();
+        this.loadNewTrack();
     }
 
     previousSong() {
         store.dispatch(fetchPreviousSong());
-        this.updateCurrentTrack();
+        this.loadNewTrack();
     }
 
 
@@ -124,12 +117,10 @@ export class App extends Component {
         progressBar.style.width = playProgress + '%';
     }
 
-
-
     render() {
         return (
             <div className="App">
-            <h1>{this.state.currentTrack}</h1>
+                <h1>{`${store.getState().playerReducer.songCounter + 1} / ${store.getState().playerReducer.totalSongs}`}</h1>
                 <div id="background-cover"></div>
                 <div id="cover"></div>
                 <div id="player">
@@ -153,16 +144,8 @@ export class App extends Component {
                     </div>
                 </div>
                 <audio>
-                    <source src={`https://drive.google.com/uc?export=view&id=1a-zUC5uhiNH3BRTBUcWL-eJ7hO6xpx50`}></source>
+                    <source src={`${this.state.currentSong}`}></source>
                 </audio>
-                {/* <Search /> */}
-                {/* <div className="demo-list-action mdl-list">
-                    {
-                        this.state.songs.map((song, index) => {
-                            return <ul id="songs"><this.listItem key={index} song={song} /></ul>
-                        })
-                    }
-                </div> */}
             </div>
         );
     }
