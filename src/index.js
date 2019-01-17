@@ -1,12 +1,26 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
+import { App } from './App';
 import * as serviceWorker from './serviceWorker';
+import { Provider } from 'react-redux';
+import store from './store';
+import { connect } from 'react-redux';
+import { fetchNextSong, fetchPreviousSong } from './actions/songAction';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+
+ReactDOM.render(<Provider store={store}><App /></Provider>, document.getElementById('root'));
+
+export default connect(mapDispatchToProps)(App);
+
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: http://bit.ly/CRA-PWA
 serviceWorker.unregister();
+
+
+const mapDispatchToProps = dispatch => ({
+    fetchNextSong: () => dispatch(fetchNextSong()),
+    fetchPreviousSong: () => dispatch(fetchPreviousSong())
+});

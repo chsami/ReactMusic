@@ -1,0 +1,97 @@
+body {
+    background-color: black;
+    color: whitesmoke;
+}
+
+* {
+    transition: 0.2s ease all;
+}
+
+.song {
+    list-style-type: none;
+}
+
+#player {
+    &:hover {
+        opacity:1;
+    }
+    position: absolute;
+    top: 50%;
+    right: 0;
+    left: 0;
+    width: 430px;
+    height: 100px;
+    margin: -4px auto;
+    background-color: whitesmoke;
+    border-radius: 6px;
+    box-shadow: 0 30px 80px #656565;
+    opacity: 0.9;
+}
+
+#player-controls {
+    width: 250px;
+    height: 100%;
+    margin: 0 5px 0 141px;
+    float: right;
+    overflow: hidden;
+}
+
+.control {
+    width: 33.333%;
+    float: left;
+    padding: 12px 0;
+}
+
+#previous-button,
+#play-button,
+#next-button {
+    &:hover {
+        color: #FEFEFA;
+        background-color: gainsboro;
+    }
+    display: block;
+    color: #000000;
+    font-size: 26px;
+    text-align: center;
+    line-height: 1;
+    width: 26px;
+    height: 26px;
+    padding: 25px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+#cover {
+    position: absolute;
+    top: 25%;
+    right: 0px;
+    left: 0;
+    width: 430px;
+    height: 35%;
+    margin: -4px auto;
+    background-color: whitesmoke;
+    /* border-radius: 6px; */
+    box-shadow: 0 30px 80px #656565;
+    background-image: url(http://k003.kiwi6.com/hotlink/0yp24xn1o8/5.jpg);
+    background-size: cover;
+}
+
+#background-cover {
+    position: fixed;
+    top: -30px;
+    right: -30px;
+    bottom: -30px;
+    left: -30px;
+    background-image: url(http://k003.kiwi6.com/hotlink/0yp24xn1o8/5.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: 50%;
+    filter: blur(40px);
+    -webkit-filter: blur(40px);
+}
+
+#progress-bar {
+    background-color: #f9054b;
+    width: 0px;
+    height:5px;
+}
