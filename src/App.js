@@ -26,13 +26,6 @@ export class App extends Component {
             const audio = document.querySelector('audio');
             this.setState({ currentSong: this.generateGoogleDriveUrl(store.getState().playerReducer.songCounter) });
             audio.load();
-            const background = document.querySelector("#cover");
-            setInterval(() => {
-                if (this.state.playButton === false) {
-                    const rnd = Math.random() * Math.floor(1000)
-                    background.style.boxShadow = `0 30px ${rnd}px #656565`;
-                }
-            }, 100);
         });
     }
 
@@ -122,23 +115,24 @@ export class App extends Component {
             <div className="App">
                 <h1>{`${store.getState().playerReducer.songCounter + 1} / ${store.getState().playerReducer.totalSongs}`}</h1>
                 <div id="background-cover"></div>
-                <div id="cover"></div>
-                <div id="player">
-                    <div id="progress-bar"></div>
-                    <div id="player-controls">
-                        <div className="control" onClick={() => this.previousSong()}>
-                            <div id="previous-button">
-                                <i className="fas fa-backward"></i>
+                <div id="player-container">
+                    <div id="player">
+                        <div id="progress-bar"></div>
+                        <div id="player-controls">
+                            <div className="control" onClick={() => this.previousSong()}>
+                                <div id="previous-button">
+                                    <i className="fas fa-backward"></i>
+                                </div>
                             </div>
-                        </div>
-                        <div className="control">
-                            <div id="play-button" onClick={this.play()}>
-                                {<i className={this.state.playButton ? 'fas fa-play' : 'fas fa-pause'}></i>}
+                            <div className="control">
+                                <div id="play-button" onClick={this.play()}>
+                                    {<i className={this.state.playButton ? 'fas fa-play' : 'fas fa-pause'}></i>}
+                                </div>
                             </div>
-                        </div>
-                        <div className="control" onClick={() => this.nextSong()}>
-                            <div id="next-button">
-                                <i className="fas fa-forward"></i>
+                            <div className="control" onClick={() => this.nextSong()}>
+                                <div id="next-button">
+                                    <i className="fas fa-forward"></i>
+                                </div>
                             </div>
                         </div>
                     </div>
